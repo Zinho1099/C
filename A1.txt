@@ -1,0 +1,187 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <string.h>
+
+struct carro {
+	int ano;
+	char modelo[20];
+	char marca[20];
+	char placa[9];
+};
+
+int i = 1;
+int opcao, anofab, pont ;
+int j, k, c, n, m;
+int anoini ;
+char mod[20];
+
+
+struct carro lista_carro[20];
+
+int main(){
+	setlocale(LC_ALL,"Portuguese");
+	while (i < 20){
+		
+		//MENU
+		printf("\n===================\n");
+		printf("\nCADASTRO DE VEICULOS \n");
+		printf("\n===================\n");
+		printf("Digite o número de uma das opções abaixo: \n");
+		printf("  1 - Inserir novo Veículo \n");
+		printf("  2 - Listar Veículos \n");
+		printf("  3 - Listar Veículos por ano de fabricação \n");
+		printf("  4 - Listar Veículos acima de determinado ano de fabricação \n");
+		printf("  5 - Listar Veículos pelo modelo \n");
+		printf("  0 - Sair \n\n");
+		scanf("%d", &opcao);
+		switch(opcao){
+			//cadastro
+			case 1:
+				if(i <= 10){
+					printf("  1 - Inserir novo Veículo \n");
+					fflush(stdin);
+					printf("\n Digite a marca do veiculo:  ");
+					scanf("%s",&lista_carro[i].marca);
+					fflush(stdin);
+					printf("\n Digite o modelo do veiculo:  ");
+					scanf("%s",&lista_carro[i].modelo);
+					fflush(stdin);
+					printf("\n Digite o ano do veiculo (4 digitos):  ");
+					scanf("%d",&lista_carro[i].ano);
+					while(lista_carro[i].ano < 1950 || lista_carro[i].ano > 2020){
+						printf("\n Ano de Fabricação Inválido ");
+						printf("\n Digite o ano do veiculo (4 digitos):  ");
+						scanf("%d",&lista_carro[i].ano);
+					}
+					fflush(stdin);
+					printf("\n Digite a placa do veiculo (ABC-1234):  ");
+					scanf("%s",&lista_carro[i].placa);
+					while(strlen(lista_carro[i].placa)!= 8){
+							printf("\n Placa Inválida ");
+							printf("\n Digite a placa do veiculo (ABC-1234):  ");
+							scanf("%s",&lista_carro[i].placa);
+					}
+					i++;
+					printf("Numero de veiculos cadastrados: %d \n", i-1);
+				}
+					
+				else{
+					printf("Volume de veiculos cadastrados atingido \n");
+					
+					
+				}
+				break;
+				//listar
+			case 2:
+				printf("  2 - Listar Veículos \n");
+				printf("Total de veiculos listados: %d \n", i-1);
+				for (j = 1; j <= i; j++)
+				{
+					if ( j < i)
+					{
+						printf("\n ==Veiculo %d== ", j);
+						printf("\n Marca -- %s", lista_carro[j].marca);
+						printf("\n Modelo -- %s", lista_carro[j].modelo);
+						printf("\n Ano -- %d", lista_carro[j].ano);
+						printf("\n Placa -- %s", lista_carro[j].placa);
+						
+					}
+					else
+					{
+						j = 10;
+					}
+					printf("\n");
+					
+				}
+			break;
+			
+			//listar por ano
+			case 3:
+				c = 0;
+				printf("  3 - Listar Veículos por ano de fabricação \n");
+				printf("Digite o ano de fabricação que voce deseja procurar --> ");
+				scanf("%d",&anofab);
+				while(anofab < 1950 || anofab > 2020)
+				{
+					printf("\n Ano Inválido. Digite Novamente ");
+					printf("Digite o ano de fabricação que voce deseja procurar --> ");
+					scanf("%d",&anofab);	
+				}
+				for(k = 0; k < 10; k++  )
+				{
+					if (lista_carro[k].ano == anofab)
+					{
+						pont = k;
+						c++;
+						printf("\n ->Veiculo #%d <- \n", k);
+						printf("Marca: %s \n", lista_carro[pont].marca);
+						printf("Modelo: %s \n", lista_carro[pont].modelo);
+						printf("Placa: %s \n", lista_carro[pont].placa);
+						printf("\n");
+					}
+					}
+				printf("Carros encontrados --- %d \n",c);
+			break;
+				// LISTAR POR ANO E ACIMA
+			case 4:
+				printf("  4 - Listar Veículos acima de determinado ano de fabricação \n");
+				printf("Digite o ano inicial: ");
+				scanf("%d", &anoini);
+				
+				while(anoini < 1950 || anoini > 2020)
+				{
+					printf("\n Ano Inválido. Digite Novamente ");
+					printf("Digite o ano inicial: ");
+					scanf("%d \n", &anoini);
+					
+				}
+				
+				for (n = 0; n <= 10 ; n++ )
+				{
+					if (lista_carro[n].ano >= anoini)
+					{
+						pont = n;
+						printf("\n Veiculo #%d \n", n);
+						printf("Marca: %s \n", lista_carro[pont].marca);
+						printf("Modelo %s \n", lista_carro[pont].modelo);
+						printf("Placa %s \n", lista_carro[pont].placa); 
+						printf("\n");
+					}
+				}
+			break;
+			
+				//lista por modelo(utilizando a funcao strcmp)
+			case 5:
+				c = 0;
+				printf("  5 - Listar Veículos pelo modelo \n");
+				printf("Digite o modelo que voce deseja procurar: ");
+				scanf("%s", &mod);
+				for(m = 0; m < 10 ; m++)
+				{
+					if (strcmp(mod,lista_carro[m].modelo) == 0)
+					{
+						pont = m;
+						printf("\n Veiculo #%d \n", m);
+						printf("Marca: %s \n", lista_carro[pont].marca);
+						printf("Ano de Fabricação %d \n", lista_carro[pont].ano);
+						printf("Placa %s \n", lista_carro[pont].placa); 
+						printf("\n");
+						c++;
+					}
+				}
+				printf("Numero de veiculos encontrados: %d \n", c);
+			break;
+			case 0:
+				printf("\n Saindo do Sistema...");
+				i = 20;
+				
+			default:
+				printf("\n Opcão Invalida \n");
+				break;	
+			}			
+		}
+					
+	
+	return 0;
+}
