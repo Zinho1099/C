@@ -1,0 +1,330 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <locale.h>
+
+#define BLOCK_SIZE 10
+
+
+
+typedef struct {
+    char nome[30];
+    int data;
+    float valor;
+} Customer;
+
+
+Customer * pCustomers;
+int *pCustomersSize;
+//PROGAMA
+int main()
+{
+	setlocale(LC_ALL, "Portuguese");
+
+	BlocoClient();
+
+    int customerSize = -1;
+    pCustomersSize = &customerSize;
+
+    int opcao;
+    while(opcao > 0) {
+        system("cls");
+        printf("Menu\n\n");
+        printf("1 - Cadastrar cliente\n");
+        printf("2 - Gastos totais por cliente deste mes\n");
+        printf("3 - Melhor comprador\n");
+        printf("4 - Remover cliente\n");
+        printf("5 - Atualizar gastos do cliente deste mês\n");
+        printf("6 - Atualizar o mês\n");
+        printf("7 - Listar todos os Clientes \n");
+        printf("0 - Sair\n\n");
+
+        printf("Escolha uma opção: ");
+        scanf("%i", &opcao);
+
+        system("cls");
+        switch(opcao) {
+            case 1:
+                ListarCliente();
+                break;
+            case 2:
+                GastoCliente();
+                break;
+            case 3:
+                TopClient();
+                break;
+            case 4:
+                RemoveClient();
+                break;
+            case 5:
+                ListarGastoMensal();
+                break;
+            case 6:
+                AtualizarMes();
+                break;
+            case 7:
+                listar();
+                break;
+        }
+    }
+
+	free(pCustomers);
+	pCustomers = NULL;
+	printf("Encerrando o Progama");
+
+    return 0;
+}
+
+
+//DECLARACAO DAS FUNCOES
+void ListarCliente();
+
+void GastoCliente();
+
+void ListarGastoMensal();
+
+void AtualizarMes();
+
+void TopClient();
+
+void BlocoClient();
+
+void reallocClient();
+
+void bubbleSort();
+
+void printClient(Customer *customer);
+
+void Continuar();
+
+void listar();
+
+
+
+void ListarCliente() {
+    printf("Cadastro de cliente\n\n");
+
+    *pCustomersSize = *pCustomersSize + 1;
+
+    Customer *customer = &pCustomers[*pCustomersSize];
+    strcpy(customer->nome, "");
+    customer->data = 0;
+    customer->valor = -1;
+
+    while(strlen(customer->nome) < 2) {
+        printf("Digite o nome: ");
+        scanf(" %[^\n]s", &customer->nome);
+
+        if(strlen(customer->nome) < 2) {
+            printf("Entrada invalida!\n");
+        }
+    }
+
+    while(customer->data < 1900 || customer->data > 2020){
+        printf("\nDigite a data de Nascimento: " );
+        scanf("%i", &customer->data);
+
+        if(customer->data < 1900 || customer->data > 2020) {
+            printf("Entrada invalida!\n");
+        }
+    }
+
+    while(customer->valor < 0) {
+        printf("\nDigite O gasto desse mês: (Para decimais use ,) ");
+        scanf("%f", &customer->valor);
+
+        if(customer->valor < 0) {
+            printf("Entrada invalida!\n");
+        }
+    }
+
+    printf("\n\nCadastro realizado com sucesso!\n'%s' (nascido em %i) gastou R$ %.2f esse mês!", customer->nome, customer->data, customer->valor);
+
+    if(*pCustomersSize % BLOCK_SIZE == 0) {
+        reallocClient();
+    }
+
+    bubbleSort();
+
+    Continuar();
+}
+
+void GastoCliente() {
+    printf("Gastos totais por cliente do mes: \n\n");
+    char nome[30] = "";
+    while(strlen(nome) < 2) {
+        printf("Digite o nome: ");
+        scanf(" %[^\n]s", &nome);
+
+        if(strlen(nome) < 2) {
+            printf("Entrada invalida!\n");
+        }
+    }
+
+    int i;
+    for (i = 0; i <= *pCustomersSize; i++) {
+        Customer *customer = &pCustomers[i];
+
+        if(strcmp(customer->nome, nome) == 0) {
+            printClient(customer);
+        }
+    }
+
+    Continuar();
+}
+
+void ListarGastoMensal() {
+    printf("Atualizar gastos totais por cliente\n\n");
+    char nome[30] = "";
+    while(strlen(nome) < 2) {
+        printf("Digite o nome: ");
+        scanf(" %[^\n]s", &nome);
+
+        if(strlen(nome) < 2) {
+            printf("Entrada invalida!\n");
+        }
+    }
+
+    int i;
+    for (i = 0; i <= *pCustomersSize; i++) {
+        Customer *customer = &pCustomers[i];
+
+        if(strcmp(customer->nome, nome) == 0) {
+            printClient(customer);
+            
+            printf("\nQual o novo valor gasto? (Para decimais use ,) ");
+                scanf("%f", &customer->valor);
+
+            while(customer->valor < 0) {
+                printf("Para de graça! Aqui nao tem saldo! :D");
+                printf("\nQual o novo valor gasto? (Para decimais use ,) ");
+                scanf("%f", &customer->valor);
+
+                
+            }
+        	printf("Valor Atualizado.");
+        }
+    }
+
+    Continuar();
+}
+
+void RemoveClient() {
+    printf("Remover de cliente por nome\n\n");
+    char nome[30] = "";
+    while(strlen(nome) < 2) {
+        printf("Digite o nome: ");
+        scanf(" %[^\n]s", &nome);
+
+        if(strlen(nome) < 2) {
+            printf("Nome inválido!\n");
+        }
+    }
+
+    int i, removed = 0;
+    for (i = 0; i <= *pCustomersSize; i++) {
+        Customer *customer = &pCustomers[i];
+
+        if(strcmp(customer->nome, nome) == 0) {
+            strcpy(customer->nome, "");
+            customer->data = 0;
+            customer->valor = -1;
+
+            ++removed;
+        }
+    }
+
+    bubbleSort();
+
+    *pCustomersSize = *pCustomersSize - removed;
+
+    listar();
+
+    
+}
+
+void TopClient() {
+    Customer *customer = &pCustomers[0];
+    printf("Melhor Comprador!!\n\n");
+    printClient(customer);
+
+    Continuar();
+}
+
+void AtualizarMes() {
+    printf("Atualizando O mês...\n\n");
+
+    int i;
+    for (i = 0; i <= *pCustomersSize; i++) {
+        Customer *customer = &pCustomers[i];
+        customer->valor = 0;
+    }
+	printf("Mês Atualizado! Novo mês para marcar os Registros \n");
+    Continuar();
+}
+
+void listar() {
+    printf("Lista de clientes\n\n");
+
+    int i;
+    for (i = 0; i <= *pCustomersSize; i++) {
+        Customer *customer = &pCustomers[i];
+
+        printClient(customer);
+    }
+
+    Continuar();
+}
+
+void printClient(Customer * customer) {
+    printf("'%s' (nascido em %i), gastou R$ %.2f esse mês!\n", customer->nome, customer->data, customer->valor);
+}
+
+void Continuar() {
+    printf("\n\nPressione qualquer tecla para continuar...");
+    getch();
+}
+// ---------------------------------------------------------------------------------------------------------
+void BlocoClient() {
+    pCustomers = (Customer *) malloc(BLOCK_SIZE * sizeof(Customer));
+
+    if (pCustomers == NULL)
+    {
+        printf("Memória insuficiente! Não é possivel continuar.");
+        printf("\n\nPressione qualquer tecla para finalizar...");
+        getch();
+        exit(1);
+    }
+}
+
+void reallocClient() {
+    pCustomers = (Customer *) realloc(pCustomers, BLOCK_SIZE * sizeof(Customer));
+
+    if (pCustomers == NULL)
+    {
+        printf("Memória insuficiente! Não é possivel continuar.");
+        printf("\n\nPressione qualquer tecla para finalizar...");
+        getch();
+        exit(1);
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------
+void bubbleSort(){
+    int i, contador;
+    Customer aux;
+
+    for (contador = -1; contador < *pCustomersSize; contador++) {
+       for (i = 0; i <= *pCustomersSize - 1; i++) {
+            Customer *customer = &pCustomers[i];
+            Customer *customer2 = &pCustomers[i + 1];
+            if (customer->valor < customer2->valor) {
+                aux = *customer2;
+                *customer2 = *customer;
+                *customer = aux;
+            }
+        }
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
